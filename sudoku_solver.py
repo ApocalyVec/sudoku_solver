@@ -1,4 +1,8 @@
 """
+This is an application which implements the Constraint Satisfaction Problem
+The program searches for the answer in depth first (greedy) manner.
+It backtracks whenever there is a dead end.
+
 Formulation of the CSP
 
 variables: cells, there are 9*9 of them
@@ -14,7 +18,7 @@ import numpy as np
 import time
 
 sudoku_domain = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-
+backtracker_cnt = 0
 
 def read_csv_as_sudoku(fn):
     sudoku = np.zeros([9, 9], dtype=int)  # make a 9*9 matrix with all zeros, the data type is integer
@@ -39,6 +43,8 @@ def recursive_backtraing(csp, domain):
     :param csp: the 9*9 numpy matrix that represents the sudoku problem
     :param domain: the list containing the all the values which the variable may take
     """
+    global backtracker_cnt
+
     if isAssignmentComplete(csp):
         return csp
 
@@ -49,9 +55,9 @@ def recursive_backtraing(csp, domain):
             csp[unassigned_var[0]][unassigned_var[1]] = value
             result = recursive_backtraing(csp, domain)
             if result is not None:
-                print(result)
                 return result
             print('Backtracking')
+            backtracker_cnt += 1
             csp[unassigned_var[0]][unassigned_var[1]] = 0
     return None
 
@@ -115,7 +121,7 @@ start = time.time()
 result = recursive_backtraing(csp, sudoku_domain)
 end = time.time()
 if result is not None:
-    print('Solution found, took ' + str(end-start) + ' sec')
+    print('Solution found, took ' + str(end-start) + 'sec. The number of backtrack is ' + str(backtracker_cnt))
     print(result)
 else:
     print('Solution does not exist!')
